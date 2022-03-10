@@ -161,7 +161,7 @@
                     html += `<div class="row 2">`
                     for (const n of g.nodes) {
                         html += `<div class="col-sm"> 
-                        <div class="text-center"><h5>${n.hostname}/${n.sensor_name}</h5></div>
+                        <div class="text-center"><h5>${n.hostname}</h5></div>
                     <div class="gauge" style="width: 200px; --rotation:${calcDeg(n.value)}deg; --color:${calcColor(n.value)}; --background:#e9ecef; margin: auto;">
                         <div class="percentage"></div>
                         <div class="mask"></div>
@@ -171,7 +171,7 @@
                     }
                     html += `</div>`;
                 } else {
-                    html += `<center class="text-center w-100"><h3>${g.nodes[0].hostname}/${g.nodes[0].sensor_name}</h3>`;
+                    html += `<center class="text-center w-100"><h3>${g.nodes[0].hostname}</h3>`;
                     html += `
                 <div class="gauge" style="width: 250px; --rotation:${calcDeg(g.nodes[0].value)}deg; --color:${calcColor(g.nodes[0].value)}; --background:#e9ecef; margin: auto;">
                     <div class="percentage"></div>
