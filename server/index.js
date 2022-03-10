@@ -32,6 +32,10 @@ app.all('*', (req, res, next) => {
 app.get('/', (req, res) => {
   res.json(default_response);
 })
+app.get('/view', (req, res) => {
+  //View html file
+  res.sendFile(__dirname + '/view.html');
+});
 app.post('/', (req, res) => {
   if (config.debug) console.log('[DEBUG] Request body', req.body);
   if (!req.body.node_id || !req.body.value) {
