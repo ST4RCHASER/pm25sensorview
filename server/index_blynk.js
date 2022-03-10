@@ -4,11 +4,15 @@ const app = express()
 const port = 3210
 const config = {
   debug: true,
+  // token: 'rYuJtEkyQSTGDUUE-ADR_ypPDKrmjYiy',
+  token: 'l6323ydKzOhq2xk3bex_FQ2EZiCtjnHD',
+  deviceId: 'V5',
 }
 let average = 0;
+let last_sent = 0;
+let last_try = 0;
 let default_response;
 let nodeLists = [];
-let groups = [];
 let startTime = new Date();
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -21,9 +25,10 @@ app.all('*', (req, res, next) => {
     hostname: 'hidden',
     message: 'PM2 Sensor Project (yue.sh)',
     node_id: 0,
-    all_average: average,
+    average: average,
     node_list: nodeLists,
-    groups: groups,
+    last_try: last_try,
+    last_sent: last_sent,
     startTime: startTime,
     uptime: process.uptime(),
   }
@@ -55,7 +60,7 @@ app.post('/', (req, res) => {
     nodeLists.push(req.body);
     if (config.debug) console.log('[DEBUG] Node edited to list:', node);
   }
-  calcAvg();
+  submitToBlynk();
   res.json({
     success: true,
     message: 'Wakatta!',
@@ -66,31 +71,23 @@ app.listen(port, () => {
   console.log(`[APP] Express listening on port ${port}`)
 })
 
-function calcAvg() {
+function submitToBlynk() {
+  last_try = new Date();
   //Calc average value
   let sum = 0;
   for (const node of nodeLists) {
     sum += node.value;
   }
   average = sum / nodeLists.length;
-  groups = [];
-  for (const node of nodeLists) {
-    let group = groups.find(group => group.name == node.group);
-    if (!group) {
-      groups.push({
-        name: node.group,
-        nodes: [node],
-      });
-    } else {
-      group.nodes.push(node);
-    }
+  //Send to Blynk
+  let str_average = average.toString();
+  if (str_average.length >= 4) {
+    str_average = str_average.substring(0, 6);
   }
-  for (const group of groups) {
-    let sum = 0;
-    for (const node of group.nodes) {
-      sum += node.value;
+  axios.put(`http://blynk2.iot-cm.com:8080/${config.token}/update/${config.deviceId}?value=${str_average}`, JSON.stringify([str_average]), {
+    headers: {
+      'Content-Type': 'application/json'
     }
-    group.average = sum / group.nodes.length;
-  }
-  if (config.debug) console.log('[DEBUG] Groups:', groups);
+  });
+  last_sent = new Date();
 }

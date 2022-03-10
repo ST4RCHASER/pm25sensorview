@@ -8,13 +8,14 @@ const char *ssid = "wifi";
 const char *password = "aek123456789";
 const int nodeid = 1;
 char hostname[] = "SC-PM2-SENDOR-NODE-1";
+char group[] = "GROUP-1";
 const char *node0_url = "http://128.199.150.87:3210";
 // const char *node0_url = "http://pm25.0127002.xyz";
 char sensor_name[] = "GP2Y1010AU0F";
 float sensor_value = 0;
 int sendTick = (1000 / 10) * 10;
 const int sharpLEDPin = D3; // Arduino digital pin D3 connect to sensor LED.
-const int sharpVoPin = A0; // Arduino analog pin A0 connect to sensor Vo.
+const int sharpVoPin = A0;  // Arduino analog pin A0 connect to sensor Vo.
 const bool debug = false;
 // End Config
 #include <ESP8266WiFi.h>
@@ -71,48 +72,53 @@ void PrintOutl(int msg)
  * ================================================================
  */
 
-void PM_loop(){
+void PM_loop()
+{
 
-// Record the output voltage. This operation takes around 100 microseconds.
-int VoRaw = analogRead(sharpVoPin);
+  // Record the output voltage. This operation takes around 100 microseconds.
+  int VoRaw = analogRead(sharpVoPin);
 
 // Print raw voltage value (number from 0 to 1023).
 #ifdef PRINT_RAW_DATA
 
-//printValue("VoRaw", VoRaw, true);
-Serial.println("");
+  // printValue("VoRaw", VoRaw, true);
+  Serial.println("");
 #endif // PRINT_RAW_DATA
- 
-// Use averaging if needed.
-float Vo = VoRaw;
+
+  // Use averaging if needed.
+  float Vo = VoRaw;
 
 #ifdef USE_AVG
-VoRawTotal += VoRaw;
-VoRawCount++;
-if ( VoRawCount >= N ) {
-Vo = 1.0 * VoRawTotal / N;
-VoRawCount = 0;
-VoRawTotal = 0;
-} else {
-return;
-}
+  VoRawTotal += VoRaw;
+  VoRawCount++;
+  if (VoRawCount >= N)
+  {
+    Vo = 1.0 * VoRawTotal / N;
+    VoRawCount = 0;
+    VoRawTotal = 0;
+  }
+  else
+  {
+    return;
+  }
 #endif // USE_AVG
- 
-// Compute the output voltage in Volts.
-Vo = Vo / 1024.0 * 3.3;
-//printFValue("Vo", Vo, "V");
- 
-// Convert to Dust Density in units of ug/m3.
-float dV = Vo - Voc;
-if ( dV < 0 ) {
-dV = 0;
-Voc = Vo;
-}
-float dustDensity = ;
-sensor_value = dustDensity;
-PrintOut("PM2.5 = ");
-PrintOut(sensor_value);
-PrintOutl(" ug/m3");
+
+  // Compute the output voltage in Volts.
+  Vo = Vo / 1024.0 * 3.3;
+  // printFValue("Vo", Vo, "V");
+
+  // Convert to Dust Density in units of ug/m3.
+  float dV = Vo - Voc;
+  if (dV < 0)
+  {
+    dV = 0;
+    Voc = Vo;
+  }
+  float dustDensity = ;
+  sensor_value = dustDensity;
+  PrintOut("PM2.5 = ");
+  PrintOut(sensor_value);
+  PrintOutl(" ug/m3");
 }
 
 void onBootComplete()
@@ -129,7 +135,8 @@ void onBootComplete()
                 root["uptime"] = millis();
                 root["node0_url"] = node0_url;
                 root["sensor_name"] = sensor_name;
-                root["sensor_value"] = sensor_value;
+                root["group"] = group;
+                // root["sensor_value"] = sensor_value;
                 root["value"] = sensor_value;
                 root["debug"] = debug;
                 char result[1024];
@@ -155,7 +162,8 @@ void onTick()
     root["uptime"] = millis();
     root["node0_url"] = node0_url;
     root["sensor_name"] = sensor_name;
-    root["sensor_value"] = sensor_value;
+    root["group"] = group;
+    // root["sensor_value"] = sensor_value;
     root["value"] = sensor_value;
     root["debug"] = debug;
     char result[1024];
