@@ -13,6 +13,12 @@ let startTime = new Date();
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.all('*', (req, res, next) => {
+  //If some in nodelist offline (last_update) more than 60 seconds, remove it
+  for(const n of nodeLists) {
+    if(new Date() - n.last_update > 60000) {
+      nodeLists.splice(nodeLists.indexOf(n), 1);
+    }
+  }
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   default_response = {

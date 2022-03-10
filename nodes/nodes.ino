@@ -77,10 +77,8 @@ void PM_loop()
 
   // Record the output voltage. This operation takes around 100 microseconds.
   int VoRaw = analogRead(sharpVoPin);
-
 // Print raw voltage value (number from 0 to 1023).
 #ifdef PRINT_RAW_DATA
-
   // printValue("VoRaw", VoRaw, true);
   Serial.println("");
 #endif // PRINT_RAW_DATA
@@ -172,8 +170,8 @@ void onTick()
     http.begin(client, node0_url);
     http.addHeader("Content-Type", "application/json");
     http.addHeader("Accept", "application/json");
-    Serial.println("result body:");
-    Serial.println(result);
+    // Serial.println("result body:");
+    // Serial.println(result);
     int httpCode = http.POST(result);
     PrintOutl("[HTTP] POST TO NODE0 PROCESSED.");
     Serial.printf("[HTTP] POST... code: %d\n", httpCode);
