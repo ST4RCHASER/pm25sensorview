@@ -136,9 +136,9 @@
     async function startFetch() {
         let result;
         try{
-            result = await axios.get(`pm25.0127002.xyz/`)
+            result = await axios.get(`/`)
         }catch(e){
-            result = await axios.get(`pm25.0127002.xyz/`)
+            result = await axios.get(`/`)
         }
         let data = result.data;
         let html = '';
