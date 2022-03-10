@@ -137,22 +137,25 @@
         let result = await axios.get('http://pm25.0127002.xyz/');
         let data = result.data;
         let html = '';
-        for (const g of data.groups) {
-            html += `<h2 class="mt-5">${g.name}</h2><hr>`;
-            if (g.nodes.length > 1) {
-                html += `<center class="text-center w-100"><h3>Average:</h3>`
-                html += `
+        if (data.node_list.length < 1) {
+            html = '<div class="alert alert-danger text-center" role="alert">No any node online</div>';
+        } else {
+            for (const g of data.groups) {
+                html += `<h2 class="mt-5">${g.name}</h2><hr>`;
+                if (g.nodes.length > 1) {
+                    html += `<center class="text-center w-100"><h3>Average:</h3>`
+                    html += `
                 <div class="gauge" style="width: 250px; --rotation:${calcDeg(g.average)}deg; --color:${calcColor(g.average)}; --background:#e9ecef; margin: auto;">
                     <div class="percentage"></div>
                     <div class="mask"></div>
                     <span class="value">${g.average.toFixed(2)}</span>
                 </div>
                 `
-                html += `</center>`;
-                html += `<center class="text-center w-100 mt-5"><h3>Nodes:</h3></center>`
-                html += `<div class="row 2">`
-                for (const n of g.nodes) {
-                    html += `<div class="col-sm"> 
+                    html += `</center>`;
+                    html += `<center class="text-center w-100 mt-5"><h3>Nodes:</h3></center>`
+                    html += `<div class="row 2">`
+                    for (const n of g.nodes) {
+                        html += `<div class="col-sm"> 
                         <div class="text-center"><h5>${n.hostname}/${n.sensor_name}</h5></div>
                     <div class="gauge" style="width: 200px; --rotation:${calcDeg(n.value)}deg; --color:${calcColor(n.value)}; --background:#e9ecef; margin: auto;">
                         <div class="percentage"></div>
@@ -160,18 +163,19 @@
                         <span class="value">${n.value.toFixed(2)}</span>
                     </div>
                 </div>`
-                }
-                html += `</div>`;
-            } else {
-                html += `<center class="text-center w-100"><h3>${g.nodes[0].hostname}/${g.nodes[0].sensor_name}</h3>`;
-                html += `
+                    }
+                    html += `</div>`;
+                } else {
+                    html += `<center class="text-center w-100"><h3>${g.nodes[0].hostname}/${g.nodes[0].sensor_name}</h3>`;
+                    html += `
                 <div class="gauge" style="width: 250px; --rotation:${calcDeg(g.nodes[0].value)}deg; --color:${calcColor(g.nodes[0].value)}; --background:#e9ecef; margin: auto;">
                     <div class="percentage"></div>
                     <div class="mask"></div>
                     <span class="value">${g.nodes[0].value.toFixed(2)}</span>
                 </div>
                 `;
-                html += `</center>`;
+                    html += `</center>`;
+                }
             }
         }
         $('#monti').html(html);
