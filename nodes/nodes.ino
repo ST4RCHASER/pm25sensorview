@@ -114,7 +114,7 @@ void PM_loop()
     dV = 0;
     Voc = Vo;
   }
-  float dustDensity = ;
+  float dustDensity = dV / K * 100.0;
   sensor_value = dustDensity;
   PrintOut("PM2.5 = ");
   PrintOut(sensor_value);
