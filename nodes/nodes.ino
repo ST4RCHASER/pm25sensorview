@@ -1,19 +1,14 @@
-/*
- *  Created by _StarChaser
- * ถ้าเครดิตถูกลบออกการ Support หลังขายจะสิ้นสุดทันที!
- */
-
 // Config
 const char *ssid = "wifi";
 const char *password = "aek123456789";
 const int nodeid = 1;
-char hostname[] = "SC-PM2-SENDOR-NODE-1";
-char group[] = "GROUP-1";
-const char *node0_url = "http://128.199.150.87:3210";
-// const char *node0_url = "http://pm25.0127002.xyz";
+char hostname[] = "PM-SENSER-NODE-1";
+char group[] = "INSIDE";
+//const char *node0_url = "http://128.199.150.87:3210";
+const char *node0_url = "http://pm25.0127002.xyz";
 char sensor_name[] = "GP2Y1010AU0F";
 float sensor_value = 0;
-int sendTick = (1000 / 10) * 10;
+int sendTick = (1000 / 10) * 1;
 const int sharpLEDPin = D3; // Arduino digital pin D3 connect to sensor LED.
 const int sharpVoPin = A0;  // Arduino analog pin A0 connect to sensor Vo.
 const bool debug = false;
@@ -25,9 +20,6 @@ const bool debug = false;
 #include "PM_Sensor.h"
 #include <SPI.h>
 #include <Wire.h>
-// #include <stdio.h>
-// #include <string.h>
-// System variables (not configurable)
 char local_ip[16] = "unknown";
 WiFiClient client;
 AsyncWebServer server(80);
@@ -74,9 +66,16 @@ void PrintOutl(int msg)
 
 void PM_loop()
 {
-
-  // Record the output voltage. This operation takes around 100 microseconds.
-  int VoRaw = analogRead(sharpVoPin);
+// Turn on the dust sensor LED by setting digital pin LOW.
+// Wait 0.28ms before taking a reading of the output voltage as per spec.
+digitalWrite(sharpLEDPin, LOW);
+delayMicroseconds(280);
+// Record the output voltage. This operation takes around 100 microseconds.
+int VoRaw = analogRead(sharpVoPin);
+// Turn the dust sensor LED off by setting digital pin HIGH.
+// Wait for remainder of the 10ms cycle = 10000 - 280 - 100 microseconds.
+digitalWrite(sharpLEDPin, HIGH);
+delayMicroseconds(280);
 // Print raw voltage value (number from 0 to 1023).
 #ifdef PRINT_RAW_DATA
   // printValue("VoRaw", VoRaw, true);
@@ -236,6 +235,7 @@ void bootup()
 
 void setup()
 {
+  pinMode(sharpLEDPin, OUTPUT);
   Serial.begin(9600);
   Serial.println();
   delay(1000);

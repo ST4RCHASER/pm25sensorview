@@ -78,6 +78,7 @@ app.listen(port, () => {
 
 function calcAvg() {
   //Calc average value
+  nodeLists.sort((a, b) => a.node_id - b.node_id);
   let sum = 0;
   for (const node of nodeLists) {
     sum += node.value;
